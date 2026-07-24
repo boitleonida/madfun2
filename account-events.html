@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>All Events - Madfun</title>
+    <meta name="description" content="Browse all events on Madfun" />
+    <link rel="icon" href="https://madfun.com/favicon.ico" type="image/x-icon" sizes="50x50" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="account-body">
+    <!-- ACCOUNT NAVBAR -->
+    <nav class="account-navbar">
+        <div class="account-nav-inner">
+            <div class="account-nav-left">
+                <a href="index.html" class="nav-logo">
+                    <img alt="Madfun Logo" width="56" height="50" src="https://madfun.com/assets/img/logos/logo-black.svg" />
+                </a>
+                <div class="account-nav-links">
+                    <a href="account-events.html" class="active">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" width="18" height="18"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"></path></svg>
+                        Events
+                    </a>
+                    <a href="account-hotels.html">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" width="18" height="18"><path d="M7 14c1.66 0 3-1.34 3-3S8.66 8 7 8s-3 1.34-3 3 1.34 3 3 3zm0-4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm12-3h-8v8H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4zm2 8h-8V9h6c1.1 0 2 .9 2 2v4z"></path></svg>
+                        Hotels
+                    </a>
+                    <a href="account-travels.html">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" width="18" height="18"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"></path></svg>
+                        Travels
+                    </a>
+                    <a href="account-streams.html">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" width="18" height="18"><path d="M8 5v14l11-7z"></path></svg>
+                        Streams
+                    </a>
+                </div>
+            </div>
+            <div class="account-nav-right">
+                <div class="user-menu" id="userMenu">
+                    <button class="user-menu-btn" id="userMenuBtn">
+                        <span id="userNameSpan">Tyler</span> <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" width="18" height="18"><path d="M7 10l5 5 5-5z"></path></svg>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="account.html">My tickets</a>
+                        <a href="auth.html" class="logout-link">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENT -->
+    <main class="events-page-main">
+        <div class="events-page-container">
+            <div class="events-page-header">
+                <h1 class="events-page-title">all events</h1>
+                <div class="events-filters">
+                    <div class="filter-search-wrap">
+                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="filter-search-icon" height="18" width="18"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="eventSearchInput" placeholder="search event, artist..." />
+                    </div>
+                    <div class="filter-date-wrap">
+                        <input type="date" id="eventDateInput" placeholder="mm/dd/yyyy" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid of Event Cards -->
+            <div class="events-display-grid" id="eventsDisplayGrid">
+                <!-- Dynamically loaded events -->
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="account-footer">
+        <div class="account-footer-inner">
+            <div class="account-footer-brand">
+                <a href="index.html">
+                    <img alt="Madfun Logo" width="70" height="65" src="https://madfun.com/assets/img/logos/logo-black.svg" style="filter: brightness(0) invert(1);" class="account-footer-logo" />
+                </a>
+                <p class="account-footer-copyright">&copy; 2025 MADFUN!<br>ALL RIGHTS RESERVED</p>
+            </div>
+            <div class="account-footer-legal">
+                <h4 class="account-footer-heading">LEGAL</h4>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms & Conditions</a>
+                <a href="#">Contact Support</a>
+            </div>
+            <div class="account-footer-social">
+                <h4 class="account-footer-heading">SOCIAL</h4>
+                <div class="account-social-icons">
+                    <a href="#" class="social-icon-circle" aria-label="Facebook">
+                        <svg viewBox="0 0 320 512" width="16" height="16" fill="currentColor"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path></svg>
+                    </a>
+                    <a href="#" class="social-icon-circle" aria-label="Twitter">
+                        <svg viewBox="0 0 512 512" width="16" height="16" fill="currentColor"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg>
+                    </a>
+                    <a href="#" class="social-icon-circle" aria-label="Instagram">
+                        <svg viewBox="0 0 448 512" width="16" height="16" fill="currentColor"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path></svg>
+                    </a>
+                </div>
+            </div>
+            <div class="account-footer-contact">
+                <h4 class="account-footer-heading">CONTACT US</h4>
+                <div class="contact-detail">
+                    <span class="contact-letter">/</span>
+                    <span>4th floor, Kalson Towers<br>76738 - 00620, Nairobi</span>
+                </div>
+                <div class="contact-detail">
+                    <span class="contact-letter phone">T</span>
+                    <span>+254 115 555 000</span>
+                </div>
+                <div class="contact-detail">
+                    <span class="contact-letter email">E</span>
+                    <span>info@madfun.com</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chat floating button -->
+    <div class="floating-buttons">
+        <button class="chat-btn" aria-label="Chat with us">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"></path></svg>
+        </button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Restore user name
+            const userName = localStorage.getItem('madfun_user') || 'Tyler';
+            document.getElementById('userNameSpan').innerText = userName;
+
+            // User dropdown
+            const userMenuBtn = document.getElementById('userMenuBtn');
+            const userDropdown = document.getElementById('userDropdown');
+            if (userMenuBtn && userDropdown) {
+                userMenuBtn.addEventListener('click', function() {
+                    userDropdown.classList.toggle('open');
+                });
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.user-menu')) {
+                        userDropdown.classList.remove('open');
+                    }
+                });
+            }
+
+            // Events List
+            let allEvents = [
+                { id: 1, title: "Nakuru Kids Festival Season 3", org: "Destiny Mentors Events", date: "25 Jul, 2026", venue: "Kunste Hotels Gardens, Nakuru", image: "https://gigs.madfun.com/images/events/kutiit-culture.jpg" },
+                { id: 2, title: "Nexora Social Club - Tropical Beach Experience", org: "Nexora Social Club", date: "26 Jul, 2026", venue: "Tropical Beach, Ruiru", image: "https://gigs.madfun.com/images/events/3rd-service.jpg" },
+                { id: 3, title: "African Twist: The Soundtrack Of Kenya's Independence", org: "Ketebul Music", date: "30 Jul, 2026", venue: "Alliance Francaise Nairobi", image: "https://gigs.madfun.com/images/events/call-experience.jpg" },
+                { id: 4, title: "The Bloom Experience Kenya 2026", org: "Our Bloom Nation", date: "01 Aug, 2026", venue: "Hilton Building, CBD Nairobi", image: "https://gigs.madfun.com/images/events/cocktail-runs.jpg" },
+                { id: 5, title: "Kikuyu Comedy Night (Nairobi Edition)", org: "Kymly Creatives", date: "25 Jul, 2026", venue: "Sarakasi Dome, Nairobi", image: "https://gigs.madfun.com/images/events/what-we-never-said.jpg" },
+                { id: 6, title: "Mugithi & Rhumba Night", org: "Vibanda Village", date: "25 Jul, 2026", venue: "Vibanda Village", image: "https://madfun.com/assets/img/banners/oak-grove-desktop.jpeg" },
+                { id: 7, title: "Ollin Youth Summit", org: "Ollin Youth Summit", date: "25 Jul, 2026", venue: "Kerugoya Stadium", image: "https://madfun.com/assets/img/banners/ttnt6-desktop.webp" },
+                { id: 8, title: "Rhythm And Rhumba Festival", org: "Signature Events", date: "26 Jul, 2026", venue: "Avery Lounge, Athi River", image: "https://madfun.com/assets/img/banners/maitu-desktop.webp" }
+            ];
+
+            const grid = document.getElementById('eventsDisplayGrid');
+
+            function renderEvents(list) {
+                grid.innerHTML = list.map(e => `
+                    <div class="inner-event-card">
+                        <div class="inner-event-img-wrap">
+                            <img src="${e.image}" alt="${e.title}" onerror="this.src='https://madfun.com/assets/img/banners/oak-grove-desktop.jpeg'" />
+                        </div>
+                        <div class="inner-event-info">
+                            <h3 class="inner-event-title">${e.title}</h3>
+                            <p class="inner-event-org">organized by ${e.org || 'Madfun'}</p>
+                            <p class="inner-event-date">${e.date || ''}</p>
+                            <p class="inner-event-venue">${e.venue || ''}</p>
+                            <a href="event.html?id=${e.id || e.docId}" class="inner-event-buy-btn">BUY TICKETS</a>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            if (typeof db !== 'undefined') {
+                db.collection('events').onSnapshot(snapshot => {
+                    if (!snapshot.empty) {
+                        allEvents = [];
+                        snapshot.forEach(doc => {
+                            const d = doc.data();
+                            allEvents.push({
+                                docId: doc.id,
+                                id: d.id || doc.id,
+                                title: d.title,
+                                org: d.org,
+                                date: d.date,
+                                venue: d.venue,
+                                image: d.image
+                            });
+                        });
+                    }
+                    renderEvents(allEvents);
+                }, () => renderEvents(allEvents));
+            } else {
+                renderEvents(allEvents);
+            }
+
+            // Search filter
+            document.getElementById('eventSearchInput').addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                const filtered = allEvents.filter(ev => 
+                    (ev.title || '').toLowerCase().includes(query) || 
+                    (ev.org || '').toLowerCase().includes(query) || 
+                    (ev.venue || '').toLowerCase().includes(query)
+                );
+                renderEvents(filtered);
+            });
+        });
+    </script>
+</body>
+</html>

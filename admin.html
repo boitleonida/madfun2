@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard & CMS - Madfun</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-color: #f4f4f5;
+            color: #18181b;
+        }
+
+        /* Password Overlay */
+        #authOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+        .auth-box {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .auth-box h2 {
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 20px;
+            color: #000;
+        }
+        .auth-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .auth-box input:focus {
+            border-color: #ff3366;
+        }
+        .auth-box button {
+            background-color: #ff3366;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.2s;
+        }
+        .auth-box button:hover {
+            opacity: 0.9;
+        }
+        .auth-error {
+            color: #dc2626;
+            background: #fee2e2;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            margin-bottom: 16px;
+            display: none;
+            text-align: left;
+        }
+
+        /* Dashboard Layout */
+        .admin-header {
+            background: #fff;
+            padding: 20px 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .admin-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            color: #ff3366;
+            margin: 0;
+        }
+        .admin-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .btn-seed {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        .btn-logout {
+            background: #18181b;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        /* Tabs */
+        .admin-nav {
+            background: #18181b;
+            padding: 0 40px;
+            display: flex;
+            gap: 10px;
+        }
+        .tab-btn {
+            background: transparent;
+            color: #a1a1aa;
+            border: none;
+            padding: 14px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover, .tab-btn.active {
+            color: white;
+            border-bottom-color: #ff3366;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .data-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f4f4f5;
+            padding-bottom: 12px;
+        }
+        .panel-header h2 {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .btn-action-primary {
+            background: #ff3366;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e4e4e7;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f4f4f5;
+            font-weight: 600;
+            color: #52525b;
+        }
+        tr:hover td {
+            background-color: #fafafa;
+        }
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .status-pending { background: #fef08a; color: #854d0e; }
+        .status-success { background: #bbf7d0; color: #166534; }
+        .status-failed { background: #fecdd3; color: #9f1239; }
+
+        .item-thumb {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .btn-edit {
+            background: #e0f2fe;
+            color: #0369a1;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 6px;
+        }
+        .btn-delete {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .modal-card {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+        .modal-card h3 {
+            margin-top: 0;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 6px;
+            color: #3f3f46;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d4d4d8;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .btn-cancel {
+            background: #e4e4e7;
+            color: #27272a;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #71717a;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AUTH OVERLAY -->
+    <div id="authOverlay">
+        <div class="auth-box">
+            <h2>Admin Login</h2>
+            <div id="authError" class="auth-error"></div>
+            <form id="loginForm">
+                <input type="email" id="adminEmail" placeholder="Enter Admin Email" required />
+                <input type="password" id="adminPassword" placeholder="Enter Admin Password" required />
+                <button type="submit">Access Dashboard</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN ADMIN CONTENT -->
+    <div id="adminContent" style="display: none;">
+        <header class="admin-header">
+            <h1>Madfun CMS & Admin</h1>
+            <div class="admin-header-actions">
+                <span id="userEmailSpan" style="font-size: 0.875rem; color: #52525b; font-weight: 500;"></span>
+                <button class="btn-logout" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <nav class="admin-nav">
+            <button class="tab-btn active" onclick="switchTab('transactions')">Transactions</button>
+            <button class="tab-btn" onclick="switchTab('queries')">User Queries</button>
+            <button class="tab-btn" onclick="switchTab('events')">Manage Events</button>
+            <button class="tab-btn" onclick="switchTab('destinations')">Manage Destinations</button>
+        </nav>
+
+        <main class="admin-container">
+            
+            <!-- TRANSACTIONS TAB -->
+            <div id="tab-transactions" class="tab-content active">
+                <div class="data-panel">
+                    <div class="panel-header">
+                        <h2>MegaPay STK Transactions</h2>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Amount</th>
+                                    <th>Reference</th>
+                                    <th>Status</th>
+                                    <th>Error</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsBody">
+                                <tr><td colspan="7" class="empty-state">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUERIES TAB -->
+            <div id="tab-queries" class="tab-content">
+                <div class="data-panel">
+                    <div class="panel-header">
+                        <h2>User Booking Queries</h2>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Destination</th>
+                                    <th>Query</th>
+                                </tr>
+                            </thead>
+                            <tbody id="queriesBody">
+                                <tr><td colspan="6" class="empty-state">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EVENTS CMS TAB -->
+            <div id="tab-events" class="tab-content">
+                <div class="data-panel">
+                    <div class="panel-header">
+                        <h2>Events Management</h2>
+                        <button class="btn-action-primary" onclick="openEventModal()">+ Add New Event</button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Poster</th>
+                                    <th>Title</th>
+                                    <th>Organiser</th>
+                                    <th>Date</th>
+                                    <th>Venue</th>
+                                    <th>Tiers & Pricing</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="eventsBody">
+                                <tr><td colspan="7" class="empty-state">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DESTINATIONS CMS TAB -->
+            <div id="tab-destinations" class="tab-content">
+                <div class="data-panel">
+                    <div class="panel-header">
+                        <h2>Travel Destinations Management</h2>
+                        <button class="btn-action-primary" onclick="openDestModal()">+ Add New Destination</button>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Title</th>
+                                    <th>ID / Slug</th>
+                                    <th>Subtitle</th>
+                                    <th>Price</th>
+                                    <th>Original Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="destinationsBody">
+                                <tr><td colspan="7" class="empty-state">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- EVENT MODAL -->
+    <div id="eventModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 id="eventModalTitle">Add New Event</h3>
+            <form id="eventForm">
+                <input type="hidden" id="eventId" />
+                <div class="form-group">
+                    <label>Event Title</label>
+                    <input type="text" id="evTitle" required placeholder="e.g. Nakuru Kids Festival" />
+                </div>
+                <div class="form-group">
+                    <label>Organiser / Host</label>
+                    <input type="text" id="evOrg" required placeholder="e.g. Destiny Mentors Events" />
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Date</label>
+                        <input type="text" id="evDate" required placeholder="e.g. 25 Jul, 2026" />
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Venue</label>
+                        <input type="text" id="evVenue" required placeholder="e.g. Kunste Hotels Gardens" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Poster Image (Upload File or Enter URL)</label>
+                    <input type="file" accept="image/*" style="margin-bottom: 8px;" onchange="handleFileUpload(this, 'evImage')" />
+                    <input type="url" id="evImage" required placeholder="https://... or upload file above" />
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="evDesc" rows="3" required placeholder="Describe the event..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Ticket Tiers (JSON Format)</label>
+                    <textarea id="evTiers" rows="4" required>[
+  { "name": "Advance", "price": 500 },
+  { "name": "Gate", "price": 800 }
+]</textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeEventModal()">Cancel</button>
+                    <button type="submit" class="btn-action-primary">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- DESTINATION MODAL -->
+    <div id="destModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 id="destModalTitle">Add New Destination</h3>
+            <form id="destForm">
+                <input type="hidden" id="destDocId" />
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Destination Title</label>
+                        <input type="text" id="dTitle" required placeholder="e.g. AMBOSELI" />
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Slug / ID</label>
+                        <input type="text" id="dSlug" required placeholder="e.g. amboseli" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Subtitle / Duration</label>
+                    <input type="text" id="dSubtitle" required placeholder="e.g. 3 Nights Amboseli Experience" />
+                </div>
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Display Price</label>
+                        <input type="text" id="dPrice" required placeholder="e.g. From USD. 1,846" />
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Original / Old Price (Optional)</label>
+                        <input type="text" id="dOldPrice" placeholder="e.g. USD. 2,215" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Hero Image (Upload File or Enter URL)</label>
+                    <input type="file" accept="image/*" style="margin-bottom: 8px;" onchange="handleFileUpload(this, 'dImage')" />
+                    <input type="url" id="dImage" required placeholder="https://... or upload file above" />
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="dDesc" rows="3" required placeholder="Experience the beauty and culture..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Gallery Images (Comma-separated URLs)</label>
+                    <textarea id="dGallery" rows="3" placeholder="https://..., https://..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeDestModal()">Cancel</button>
+                    <button type="submit" class="btn-action-primary">Save Destination</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FIREBASE COMPAT SCRIPTS -->
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        const auth = firebase.auth();
+
+        function handleFileUpload(inputEl, targetId) {
+            const file = inputEl.files && inputEl.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(targetId).value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Active tab navigation
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        // Auth listener
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('authOverlay').style.display = 'none';
+                document.getElementById('adminContent').style.display = 'block';
+                document.getElementById('userEmailSpan').innerText = user.email || '';
+                loadData();
+            } else {
+                document.getElementById('authOverlay').style.display = 'flex';
+                document.getElementById('adminContent').style.display = 'none';
+            }
+        });
+
+        // Login submit
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            const errEl = document.getElementById('authError');
+            const submitBtn = e.target.querySelector('button');
+
+            errEl.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Signing in...';
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Access Dashboard';
+                })
+                .catch((error) => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Access Dashboard';
+                    errEl.innerText = error.message;
+                    errEl.style.display = 'block';
+                });
+        });
+
+        function logout() {
+            auth.signOut();
+        }
+
+        function formatDate(timestamp) {
+            if (!timestamp) return 'N/A';
+            const d = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return d.toLocaleString();
+        }
+
+        function getStatusBadge(status) {
+            if (!status) return '<span class="status-badge status-pending">Pending</span>';
+            const s = status.toLowerCase();
+            if (s === 'success') return `<span class="status-badge status-success">${status}</span>`;
+            if (s === 'failed') return `<span class="status-badge status-failed">${status}</span>`;
+            return `<span class="status-badge status-pending">${status}</span>`;
+        }
+
+        let unsubs = [];
+
+        function loadData() {
+            unsubs.forEach(unsub => unsub && unsub());
+            unsubs = [];
+
+            // 1. Load Transactions
+            unsubs.push(db.collection("transactions").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+                const tbody = document.getElementById('transactionsBody');
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No transactions found.</td></tr>';
+                    return;
+                }
+                let html = '';
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    html += `
+                        <tr>
+                            <td>${formatDate(data.timestamp)}</td>
+                            <td>${data.phone || '-'}</td>
+                            <td>${data.email || '-'}</td>
+                            <td>KES ${data.amount ? data.amount.toLocaleString() : '0'}</td>
+                            <td>${data.reference || '-'}</td>
+                            <td>${getStatusBadge(data.status)}</td>
+                            <td>${data.errorMessage || '-'}</td>
+                        </tr>`;
+                });
+                tbody.innerHTML = html;
+            }));
+
+            // 2. Load Queries
+            unsubs.push(db.collection("queries").orderBy("timestamp", "desc").onSnapshot((snapshot) => {
+                const tbody = document.getElementById('queriesBody');
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No queries found.</td></tr>';
+                    return;
+                }
+                let html = '';
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    html += `
+                        <tr>
+                            <td>${formatDate(data.timestamp)}</td>
+                            <td>${data.name || '-'}</td>
+                            <td>${data.phone || '-'}</td>
+                            <td>${data.email || '-'}</td>
+                            <td>${data.destination || '-'}</td>
+                            <td>${data.query || '-'}</td>
+                        </tr>`;
+                });
+                tbody.innerHTML = html;
+            }));
+
+            // 3. Load Events
+            unsubs.push(db.collection("events").onSnapshot((snapshot) => {
+                const tbody = document.getElementById('eventsBody');
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No events found in Firebase. Click "Seed Default Data" above to populate!</td></tr>';
+                    return;
+                }
+                let html = '';
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const tiersSummary = (data.tiers || []).map(t => `${t.name}: KES ${t.price}`).join('<br>');
+                    html += `
+                        <tr>
+                            <td><img src="${data.image || 'https://madfun.com/assets/img/banners/oak-grove-desktop.jpeg'}" class="item-thumb" alt="${data.title}" onerror="this.src='https://madfun.com/assets/img/banners/oak-grove-desktop.jpeg'"></td>
+                            <td><strong>${data.title}</strong></td>
+                            <td>${data.org || '-'}</td>
+                            <td>${data.date || '-'}</td>
+                            <td>${data.venue || '-'}</td>
+                            <td><small>${tiersSummary || '-'}</small></td>
+                            <td>
+                                <button class="btn-edit" onclick="editEvent('${doc.id}')">Edit</button>
+                                <button class="btn-delete" onclick="deleteEvent('${doc.id}', '${data.title}')">Delete</button>
+                            </td>
+                        </tr>`;
+                });
+                tbody.innerHTML = html;
+            }));
+
+            // 4. Load Destinations
+            unsubs.push(db.collection("destinations").onSnapshot((snapshot) => {
+                const tbody = document.getElementById('destinationsBody');
+                if (snapshot.empty) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No destinations found in Firebase. Click "Seed Default Data" above to populate!</td></tr>';
+                    return;
+                }
+                let html = '';
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    html += `
+                        <tr>
+                            <td><img src="${data.image}" class="item-thumb" alt="${data.title}"></td>
+                            <td><strong>${data.title}</strong></td>
+                            <td><code>${data.slug || doc.id}</code></td>
+                            <td>${data.subtitle || '-'}</td>
+                            <td><strong>${data.price || '-'}</strong></td>
+                            <td><span style="text-decoration: line-through; color: #a1a1aa;">${data.oldPrice || '-'}</span></td>
+                            <td>
+                                <button class="btn-edit" onclick="editDestination('${doc.id}')">Edit</button>
+                                <button class="btn-delete" onclick="deleteDestination('${doc.id}', '${data.title}')">Delete</button>
+                            </td>
+                        </tr>`;
+                });
+                tbody.innerHTML = html;
+            }));
+        }
+
+        /* ===== EVENT MODAL & CRUD ===== */
+        function openEventModal(docId = null) {
+            document.getElementById('eventForm').reset();
+            document.getElementById('eventId').value = docId || '';
+            document.getElementById('eventModalTitle').innerText = docId ? 'Edit Event' : 'Add New Event';
+            document.getElementById('eventModal').style.display = 'flex';
+        }
+
+        function closeEventModal() {
+            document.getElementById('eventModal').style.display = 'none';
+        }
+
+        function editEvent(docId) {
+            db.collection("events").doc(docId).get().then((doc) => {
+                if (doc.exists) {
+                    const d = doc.data();
+                    document.getElementById('eventId').value = doc.id;
+                    document.getElementById('evTitle').value = d.title || '';
+                    document.getElementById('evOrg').value = d.org || '';
+                    document.getElementById('evDate').value = d.date || '';
+                    document.getElementById('evVenue').value = d.venue || '';
+                    document.getElementById('evImage').value = d.image || '';
+                    document.getElementById('evDesc').value = d.description || '';
+                    document.getElementById('evTiers').value = JSON.stringify(d.tiers || [], null, 2);
+                    
+                    document.getElementById('eventModalTitle').innerText = 'Edit Event';
+                    document.getElementById('eventModal').style.display = 'flex';
+                }
+            });
+        }
+
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const docId = document.getElementById('eventId').value;
+            let tiers = [];
+            try {
+                tiers = JSON.parse(document.getElementById('evTiers').value);
+            } catch (err) {
+                alert('Invalid JSON in Ticket Tiers field!');
+                return;
+            }
+
+            const evData = {
+                title: document.getElementById('evTitle').value,
+                org: document.getElementById('evOrg').value,
+                date: document.getElementById('evDate').value,
+                venue: document.getElementById('evVenue').value,
+                image: document.getElementById('evImage').value,
+                description: document.getElementById('evDesc').value,
+                tiers: tiers,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            const promise = docId 
+                ? db.collection("events").doc(docId).update(evData)
+                : db.collection("events").add({ ...evData, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+
+            promise.then(() => {
+                closeEventModal();
+            }).catch(err => alert("Error saving event: " + err.message));
+        });
+
+        function deleteEvent(docId, title) {
+            if (confirm(`Are you sure you want to delete event "${title}"?`)) {
+                db.collection("events").doc(docId).delete().catch(err => alert(err.message));
+            }
+        }
+
+        /* ===== DESTINATION MODAL & CRUD ===== */
+        function openDestModal(docId = null) {
+            document.getElementById('destForm').reset();
+            document.getElementById('destDocId').value = docId || '';
+            document.getElementById('destModalTitle').innerText = docId ? 'Edit Destination' : 'Add New Destination';
+            document.getElementById('destModal').style.display = 'flex';
+        }
+
+        function closeDestModal() {
+            document.getElementById('destModal').style.display = 'none';
+        }
+
+        function editDestination(docId) {
+            db.collection("destinations").doc(docId).get().then((doc) => {
+                if (doc.exists) {
+                    const d = doc.data();
+                    document.getElementById('destDocId').value = doc.id;
+                    document.getElementById('dTitle').value = d.title || '';
+                    document.getElementById('dSlug').value = d.slug || doc.id;
+                    document.getElementById('dSubtitle').value = d.subtitle || '';
+                    document.getElementById('dPrice').value = d.price || '';
+                    document.getElementById('dOldPrice').value = d.oldPrice || '';
+                    document.getElementById('dImage').value = d.image || '';
+                    document.getElementById('dDesc').value = d.description || '';
+                    document.getElementById('dGallery').value = (d.gallery || []).join(', ');
+
+                    document.getElementById('destModalTitle').innerText = 'Edit Destination';
+                    document.getElementById('destModal').style.display = 'flex';
+                }
+            });
+        }
+
+        document.getElementById('destForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const docId = document.getElementById('destDocId').value;
+            const slug = document.getElementById('dSlug').value.trim().toLowerCase();
+            const galleryArr = document.getElementById('dGallery').value.split(',').map(s => s.trim()).filter(Boolean);
+
+            const destData = {
+                title: document.getElementById('dTitle').value,
+                slug: slug,
+                subtitle: document.getElementById('dSubtitle').value,
+                price: document.getElementById('dPrice').value,
+                oldPrice: document.getElementById('dOldPrice').value,
+                image: document.getElementById('dImage').value,
+                description: document.getElementById('dDesc').value,
+                gallery: galleryArr.length ? galleryArr : [document.getElementById('dImage').value],
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            const targetId = docId || slug;
+            db.collection("destinations").doc(targetId).set(destData, { merge: true })
+                .then(() => {
+                    closeDestModal();
+                })
+                .catch(err => alert("Error saving destination: " + err.message));
+        });
+
+        function deleteDestination(docId, title) {
+            if (confirm(`Are you sure you want to delete destination "${title}"?`)) {
+                db.collection("destinations").doc(docId).delete().catch(err => alert(err.message));
+            }
+        }
+
+        /* ===== SEED INITIAL DATA TO FIREBASE ===== */
+        const DEFAULT_EVENTS = [
+          {
+                    "id": 1,
+                    "title": "Nakuru Kids Festival Season 3",
+                    "org": "Destiny Mentors Events",
+                    "date": "25 Jul, 2026",
+                    "venue": "Kunste Hotels Gardens, Nakuru",
+                    "image": "https://gigs.madfun.com/images/events/kutiit-culture.jpg",
+                    "description": "Get ready for the biggest kids festival in Nakuru! An action-packed day of games, talent showcases, face painting, bouncing castles, and live performances. Fun for the whole family!",
+                    "tiers": [
+                              {
+                                        "name": "Advance",
+                                        "price": 500
+                              },
+                              {
+                                        "name": "Gate",
+                                        "price": 800
+                              },
+                              {
+                                        "name": "Group of 5",
+                                        "price": 2000
+                              }
+                    ]
+          },
+          {
+                    "id": 2,
+                    "title": "Nexora Social Club - Tropical Beach Experience",
+                    "org": "Nexora Social Club",
+                    "date": "26 Jul, 2026",
+                    "venue": "Tropical Beach, Ruiru",
+                    "image": "https://gigs.madfun.com/images/events/3rd-service.jpg",
+                    "description": "Join the ultimate tropical beach experience at Ruiru. Live DJs, cocktails, beach games and good vibes all day long. Dress code: Shades of Pink & Yellow.",
+                    "tiers": [
+                              {
+                                        "name": "Ruiru Residents",
+                                        "price": 1000
+                              },
+                              {
+                                        "name": "General Advance",
+                                        "price": 1500
+                              },
+                              {
+                                        "name": "Gate",
+                                        "price": 2000
+                              },
+                              {
+                                        "name": "VIP",
+                                        "price": 3000
+                              }
+                    ]
+          },
+          {
+                    "id": 3,
+                    "title": "African Twist: The Soundtrack Of Kenya's Independence",
+                    "org": "Ketebul Music",
+                    "date": "30 Jul, 2026",
+                    "venue": "Alliance Francaise Nairobi",
+                    "image": "https://gigs.madfun.com/images/events/call-experience.jpg",
+                    "description": "A musical journey celebrating Kenya's independence through the sounds that shaped a nation. Featuring legendary Kenyan artists and new voices in a night of unforgettable performances.",
+                    "tiers": [
+                              {
+                                        "name": "Regular",
+                                        "price": 1000
+                              },
+                              {
+                                        "name": "VIP",
+                                        "price": 3000
+                              }
+                    ]
+          },
+          {
+                    "id": 4,
+                    "title": "The Bloom Experience Kenya 2026",
+                    "org": "Our Bloom Nation",
+                    "date": "01 Aug, 2026",
+                    "venue": "Hilton Building, CBD Nairobi",
+                    "image": "https://gigs.madfun.com/images/events/cocktail-runs.jpg",
+                    "description": "The Bloom Experience is a premier networking and lifestyle event bringing together Kenya's brightest minds, creators, and entrepreneurs under one roof.",
+                    "tiers": [
+                              {
+                                        "name": "Early Bird",
+                                        "price": 1500
+                              },
+                              {
+                                        "name": "Regular",
+                                        "price": 2500
+                              },
+                              {
+                                        "name": "VIP",
+                                        "price": 5000
+                              }
+                    ]
+          },
+          {
+                    "id": 5,
+                    "title": "Kikuyu Comedy Night (Nairobi Edition)",
+                    "org": "Kymly Creatives",
+                    "date": "25 Jul, 2026",
+                    "venue": "Sarakasi Dome, Nairobi",
+                    "image": "https://gigs.madfun.com/images/events/what-we-never-said.jpg",
+                    "description": "A hilarious night of Kikuyu stand-up comedy featuring the best comedians from the central region. Come laugh, enjoy great food, and celebrate our culture.",
+                    "tiers": [
+                              {
+                                        "name": "Regular",
+                                        "price": 500
+                              },
+                              {
+                                        "name": "VIP",
+                                        "price": 1500
+                              }
+                    ]
+          },
+          {
+                    "id": 6,
+                    "title": "Mugithi & Rhumba Night",
+                    "org": "Vibanda Village",
+                    "date": "25 Jul, 2026",
+                    "venue": "Vibanda Village",
+                    "image": "https://madfun.com/assets/img/banners/oak-grove-desktop.jpeg",
+                    "description": "An electrifying night of Mugithi and Rhumba music at the heart of Vibanda Village. Enjoy live bands, great food, and an unforgettable atmosphere.",
+                    "tiers": [
+                              {
+                                        "name": "Advance",
+                                        "price": 300
+                              },
+                              {
+                                        "name": "Gate",
+                                        "price": 500
+                              }
+                    ]
+          },
+          {
+                    "id": 7,
+                    "title": "Ollin Youth Summit",
+                    "org": "Ollin Youth Summit",
+                    "date": "25 Jul, 2026",
+                    "venue": "Kerugoya Stadium",
+                    "image": "https://madfun.com/assets/img/banners/ttnt6-desktop.webp",
+                    "description": "A dynamic youth summit bringing together young leaders for interactive sessions, networking, worship, and more. Featuring speakers, workshops, and live music.",
+                    "tiers": [
+                              {
+                                        "name": "Standard",
+                                        "price": 200
+                              },
+                              {
+                                        "name": "Premium",
+                                        "price": 500
+                              }
+                    ]
+          },
+          {
+                    "id": 8,
+                    "title": "Rhythm And Rhumba Festival",
+                    "org": "Signature Events",
+                    "date": "26 Jul, 2026",
+                    "venue": "Avery Lounge, Athi River",
+                    "image": "https://madfun.com/assets/img/banners/maitu-desktop.webp",
+                    "description": "The biggest Rhumba festival in Athi River! Featuring top Congolese and Kenyan Rhumba bands in one epic night of music, dance, and celebration.",
+                    "tiers": [
+                              {
+                                        "name": "Advance",
+                                        "price": 1000
+                              },
+                              {
+                                        "name": "Gate",
+                                        "price": 1500
+                              },
+                              {
+                                        "name": "VIP Table (4 pax)",
+                                        "price": 8000
+                              }
+                    ]
+          }
+];
+
+        const DEFAULT_DESTINATIONS = [
+          {
+                    "slug": "amboseli",
+                    "title": "AMBOSELI",
+                    "subtitle": "3 Nights Amboseli Experience",
+                    "image": "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                    "description": "Experience the beauty and culture of Amboseli. A breathtaking destination awaits you.",
+                    "price": "From USD. 1,846",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "diani",
+                    "title": "DIANI",
+                    "subtitle": "3 Nights Diani Experience",
+                    "image": "https://madfun.com/assets/img/destinations/featured/diani.jpg",
+                    "description": "Experience the beauty and culture of Diani. A breathtaking destination awaits you.",
+                    "price": "From USD. 1,250",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/diani.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "joburg",
+                    "title": "JOBURG",
+                    "subtitle": "3 Nights Joburg Experience",
+                    "image": "https://madfun.com/assets/img/destinations/featured/joburg.jpg",
+                    "description": "Experience the beauty and culture of Joburg. A breathtaking destination awaits you.",
+                    "price": "From USD. 2,300",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/joburg.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "lake-nakuru",
+                    "title": "LAKE NAKURU",
+                    "subtitle": "3 Nights Lake Nakuru Experience",
+                    "image": "https://madfun.com/assets/img/destinations/featured/lake-nakuru.jpg",
+                    "description": "Experience the beauty and culture of Lake Nakuru. A breathtaking destination awaits you.",
+                    "price": "From USD. 1,975",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/lake-nakuru.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "live-one-day",
+                    "title": "LIVE ONE DAY THE MAASAI WAY",
+                    "subtitle": "1 Day Live One Day the Maasai Way Experience",
+                    "image": "https://madfun.com/assets/img/destinations/featured/live-one-day.jpg",
+                    "description": "Experience the beauty and culture of Live One Day the Maasai Way. A breathtaking destination awaits you.",
+                    "price": "From USD. 295",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/live-one-day.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "london",
+                    "title": "LONDON",
+                    "subtitle": "4 Days London Experience",
+                    "image": "https://madfun.com/assets/img/destinations/featured/london.jpg",
+                    "description": "Experience the beauty and culture of London. A breathtaking destination awaits you.",
+                    "price": "USD. 1,000",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/london.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "malaysia",
+                    "title": "DISCOVER MALAYSIA",
+                    "subtitle": "5 Days Discover Malaysia Experience",
+                    "image": "https://madfun.com/assets/img/destinations/featured/malaysia.jpg",
+                    "description": "Experience the beauty and culture of Discover Malaysia. A breathtaking destination awaits you.",
+                    "price": "From USD. 470",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/malaysia.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "masai-mara",
+                    "title": "MAASAI MARA",
+                    "subtitle": "3 Nights Maasai Mara Experience",
+                    "image": "https://madfun.com/assets/img/destinations/featured/masai-mara.jpg",
+                    "description": "Experience the beauty and culture of Maasai Mara. A breathtaking destination awaits you.",
+                    "price": "From USD. 2,210",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/masai-mara.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "karibu-nairobi",
+                    "title": "KARIBU NAIROBI",
+                    "subtitle": "Karibu Nairobi",
+                    "image": "https://madfun.com/assets/img/destinations/featured/nairobi.jpg",
+                    "description": "Experience the beauty and culture of Karibu Nairobi. A breathtaking destination awaits you.",
+                    "price": "USD. 1,000",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/nairobi.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "naivasha",
+                    "title": "FAMILY GETAWAY",
+                    "subtitle": "3 Days Family Getaway Experience",
+                    "image": "https://madfun.com/assets/img/destinations/featured/naivasha.jpg",
+                    "description": "Experience the beauty and culture of Family Getaway. A breathtaking destination awaits you.",
+                    "price": "From KES. 55,000",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/naivasha.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "south-africa",
+                    "title": "SOUTH AFRICA",
+                    "subtitle": "6 Days South Africa Experience",
+                    "image": "https://madfun.com/assets/img/destinations/featured/south-africa.jpg",
+                    "description": "Experience the beauty and culture of South Africa. A breathtaking destination awaits you.",
+                    "price": "From USD. 970",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/south-africa.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "zanzibar",
+                    "title": "DISCOVER ZANZIBAR",
+                    "subtitle": "5 Discover Zanzibar Experience",
+                    "image": "https://madfun.com/assets/img/destinations/featured/zanzibar.webp",
+                    "description": "Experience the beauty and culture of Discover Zanzibar. A breathtaking destination awaits you.",
+                    "price": "From USD. 560",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "greece",
+                    "title": "GREECE",
+                    "subtitle": "Greece",
+                    "image": "https://madfun.com/assets/img/destinations/featured/greece.jpg",
+                    "description": "Experience the beauty and culture of Greece. A breathtaking destination awaits you.",
+                    "price": "From USD. 1,899",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/greece.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "egypt",
+                    "title": "CAIRO - EGYPT",
+                    "subtitle": "2 Cairo - Egypt Experience",
+                    "image": "https://madfun.com/assets/img/destinations/featured/egypt.jpg",
+                    "description": "Experience the beauty and culture of Cairo - Egypt. A breathtaking destination awaits you.",
+                    "price": "From USD. 1,565",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/egypt.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "bali",
+                    "title": "BALI - INDONESIA",
+                    "subtitle": "Bali - Indonesia",
+                    "image": "https://madfun.com/assets/img/destinations/featured/bali.jpg",
+                    "description": "Experience the beauty and culture of Bali - Indonesia. A breathtaking destination awaits you.",
+                    "price": "From USD. 850",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/bali.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "pattaya",
+                    "title": "PATTAYA AND BANGKOK DUO",
+                    "subtitle": "Pattaya and Bangkok Duo",
+                    "image": "https://madfun.com/assets/img/destinations/featured/pattaya-bangkok.avif",
+                    "description": "Experience the beauty and culture of Pattaya and Bangkok Duo. A breathtaking destination awaits you.",
+                    "price": "From USD. 1,985",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/pattaya-bangkok.avif",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "paris",
+                    "title": "PARIS, ZURICH AND MUNICH",
+                    "subtitle": "Paris, Zurich and Munich",
+                    "image": "https://madfun.com/assets/img/destinations/featured/paris.webp",
+                    "description": "Experience the beauty and culture of Paris, Zurich and Munich. A breathtaking destination awaits you.",
+                    "price": "From USD. 2,585",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/paris.webp",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "melbourne",
+                    "title": "MELBOURNE",
+                    "subtitle": "Melbourne",
+                    "image": "https://madfun.com/assets/img/destinations/featured/melbourne.webp",
+                    "description": "Experience the beauty and culture of Melbourne. A breathtaking destination awaits you.",
+                    "price": "From USD. 2,920",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/melbourne.webp",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "austria",
+                    "title": "AUSTRIA",
+                    "subtitle": "Austria",
+                    "image": "https://madfun.com/assets/img/destinations/featured/austria.webp",
+                    "description": "Experience the beauty and culture of Austria. A breathtaking destination awaits you.",
+                    "price": "From USD. 2,555",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/austria.webp",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "japan",
+                    "title": "JAPAN",
+                    "subtitle": "Japan",
+                    "image": "https://madfun.com/assets/img/destinations/featured/japan.webp",
+                    "description": "Experience the beauty and culture of Japan. A breathtaking destination awaits you.",
+                    "price": "From USD. 3,540",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/japan.webp",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "italy",
+                    "title": "ITALY",
+                    "subtitle": "Italy",
+                    "image": "https://madfun.com/assets/img/destinations/featured/italy.webp",
+                    "description": "Experience the beauty and culture of Italy. A breathtaking destination awaits you.",
+                    "price": "From USD. 2,550",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/italy.webp",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "mauritius",
+                    "title": "MAURITIUS",
+                    "subtitle": "Mauritius",
+                    "image": "https://madfun.com/assets/img/destinations/featured/mauritius.webp",
+                    "description": "Experience the beauty and culture of Mauritius. A breathtaking destination awaits you.",
+                    "price": "From USD. 4,850",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/mauritius.webp",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "turkey",
+                    "title": "TURKEY",
+                    "subtitle": "Turkey",
+                    "image": "https://madfun.com/assets/img/destinations/featured/turkey.webp",
+                    "description": "Experience the beauty and culture of Turkey. A breathtaking destination awaits you.",
+                    "price": "From USD. 1,050",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/turkey.webp",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "china",
+                    "title": "CHINA",
+                    "subtitle": "China",
+                    "image": "https://madfun.com/assets/img/destinations/featured/china.webp",
+                    "description": "Experience the beauty and culture of China. A breathtaking destination awaits you.",
+                    "price": "From USD. 1,795",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/china.webp",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          },
+          {
+                    "slug": "spain",
+                    "title": "SPAIN",
+                    "subtitle": "Spain",
+                    "image": "https://madfun.com/assets/img/destinations/featured/spain.webp",
+                    "description": "Experience the beauty and culture of Spain. A breathtaking destination awaits you.",
+                    "price": "From USD. 3,375",
+                    "oldPrice": "",
+                    "gallery": [
+                              "https://madfun.com/assets/img/destinations/featured/spain.webp",
+                              "https://madfun.com/assets/img/destinations/featured/amboseli.jpg",
+                              "https://madfun.com/assets/img/destinations/featured/zanzibar.webp"
+                    ]
+          }
+];
+
+        function seedInitialData() {
+            if (!confirm("This will write the default Events and Destinations into your Firebase database. Continue?")) return;
+
+            const batch = db.batch();
+
+            // Seed Events
+            DEFAULT_EVENTS.forEach(ev => {
+                const ref = db.collection("events").doc(String(ev.id));
+                batch.set(ref, ev, { merge: true });
+            });
+
+            // Seed Destinations
+            DEFAULT_DESTINATIONS.forEach(d => {
+                const ref = db.collection("destinations").doc(d.slug);
+                batch.set(ref, d, { merge: true });
+            });
+
+            batch.commit()
+                .then(() => alert("Successfully seeded default Events and Destinations to Firebase!"))
+                .catch(err => alert("Seeding error: " + err.message));
+        }
+    </script>
+</body>
+</html>

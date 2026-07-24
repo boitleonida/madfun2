@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login - Madfun</title>
+    <meta name="description" content="Login or Sign Up to Madfun" />
+    <link rel="icon" href="https://madfun.com/favicon.ico" type="image/x-icon" sizes="50x50" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="auth-body">
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="auth-form-wrap">
+                <h1 class="auth-title">Logins</h1>
+                <form class="auth-form" id="authForm" onsubmit="event.preventDefault(); var email = document.getElementById('phone-email').value || 'User'; localStorage.setItem('madfun_user', email.split('@')[0] || 'User'); var target = new URLSearchParams(window.location.search).get('redirect') || 'account.html'; window.location.href = target; return false;">
+                    <div class="form-group">
+                        <label for="phone-email">Phone / Email</label>
+                        <input type="text" id="phone-email" name="phone-email" autocomplete="username" />
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" autocomplete="current-password" />
+                    </div>
+                    <button type="submit" class="btn-next">Next</button>
+                    <div class="auth-alt-actions">
+                        <a href="#" class="btn-signup-alt">Sign Up</a>
+                        <a href="#" class="btn-reset-alt">Reset Password</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="auth-right">
+            <img alt="Madfun Event" src="https://gigs.madfun.com/images/madfun-bg-image.jpeg" />
+        </div>
+    </div>
+</body>
+</html>

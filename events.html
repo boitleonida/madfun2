@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Events - Madfun</title>
+    <meta name="description" content="Browse events ticketed by Madfun" />
+    <link rel="icon" href="https://madfun.com/favicon.ico" type="image/x-icon" sizes="50x50" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <main>
+        <!-- NAVBAR (same as homepage) -->
+        <nav class="navbar" id="navbar">
+            <div class="nav-container">
+                <div class="nav-inner">
+                    <div class="mobile-download-center">
+                        <button class="btn-download-mobile">Download App</button>
+                    </div>
+                    <div class="mobile-menu-btn-wrap">
+                        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
+                            <svg stroke="currentColor" fill="currentColor" stroke-width="0" version="1.1" viewBox="0 0 17 17" width="24" height="24"><path d="M17 2v1h-17v-1h17zM3 7h14v-1h-14v1zM0 11h17v-1h-17v1zM7 15h10v-1h-10v1z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="nav-content">
+                        <div class="nav-left">
+                            <a class="nav-logo" href="index.html">
+                                <img alt="Madfun Logo" width="56" height="50" src="https://madfun.com/assets/img/logos/logo-black.svg" />
+                            </a>
+                            <div class="nav-links">
+                                <a href="events.html" class="active">Events</a>
+                                <a href="#">Xperience</a>
+                                <a href="#">Hotels</a>
+                                <a href="#">Travel</a>
+                                <a href="#">Streams</a>
+                            </div>
+                        </div>
+                        <div class="nav-right">
+                            <div class="nav-create-event">
+                                <span>Create Event</span>
+                                <div class="create-event-dropdown">
+                                    <p>Host and manage your events using the <strong>My Madfun</strong> app.</p>
+                                    <button class="btn-host-app">Download Host App</button>
+                                </div>
+                            </div>
+                            <div class="nav-buttons">
+                                <a class="btn-login" href="auth.html">Login/Sign Up</a>
+                                <button class="btn-download">Download App</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Nav Menu -->
+        <div class="mobile-nav-menu" id="mobileNavMenu">
+            <a href="events.html">Events</a>
+            <a href="#">Xperience</a>
+            <a href="#">Hotels</a>
+            <a href="#">Travel</a>
+            <a href="#">Streams</a>
+            <a href="auth.html" class="btn-login-mobile">Login/Sign Up</a>
+        </div>
+
+        <!-- Events Page Content -->
+        <section class="events-page-section">
+            <div class="section-container">
+                <div class="events-page-grid" id="eventsPageGrid">
+                    <!-- Events loaded dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- WhatsApp & Chat Floating Buttons -->
+        <div class="floating-buttons">
+            <a href="#" class="whatsapp-btn" aria-label="WhatsApp">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
+            </a>
+            <button class="chat-btn" aria-label="Chat with us">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"></path></svg>
+            </button>
+        </div>
+        <div class="chat-sidebar-tab">
+            <span>Chat with us</span>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
