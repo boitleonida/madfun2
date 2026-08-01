@@ -1,0 +1,30 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin.html
+Disallow: /account.html
+Disallow: /account-events.html
+Disallow: /account-hotels.html
+Disallow: /account-travels.html
+Disallow: /account-streams.html
+Disallow: /auth.html
+
+# Sitemap location
+Sitemap: https://madfun.com/sitemap.xml
+
+# Crawl-delay for polite bots
+Crawl-delay: 2
+
+# Allow all major search engines full access to public pages
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /admin.html
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /admin.html
+
+User-agent: Slurp
+Allow: /
