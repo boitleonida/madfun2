@@ -10,7 +10,7 @@ Disallow: /account-streams.html
 Disallow: /auth.html
 
 # Sitemap location
-Sitemap: https://madfun.com/sitemap.xml
+Sitemap: https://madfun.online/sitemap.xml
 
 # Crawl-delay for polite bots
 Crawl-delay: 2
