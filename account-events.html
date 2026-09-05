@@ -155,14 +155,14 @@
 
             // Events List
             let allEvents = [
-                { id: 1, title: "Nakuru Kids Festival Season 3", org: "Destiny Mentors Events", date: "25 Jul, 2026", venue: "Kunste Hotels Gardens, Nakuru", image: "https://gigs.madfun.com/images/events/kutiit-culture.jpg" },
-                { id: 2, title: "Nexora Social Club - Tropical Beach Experience", org: "Nexora Social Club", date: "26 Jul, 2026", venue: "Tropical Beach, Ruiru", image: "https://gigs.madfun.com/images/events/3rd-service.jpg" },
-                { id: 3, title: "African Twist: The Soundtrack Of Kenya's Independence", org: "Ketebul Music", date: "30 Jul, 2026", venue: "Alliance Francaise Nairobi", image: "https://gigs.madfun.com/images/events/call-experience.jpg" },
-                { id: 4, title: "The Bloom Experience Kenya 2026", org: "Our Bloom Nation", date: "01 Aug, 2026", venue: "Hilton Building, CBD Nairobi", image: "https://gigs.madfun.com/images/events/cocktail-runs.jpg" },
-                { id: 5, title: "Kikuyu Comedy Night (Nairobi Edition)", org: "Kymly Creatives", date: "25 Jul, 2026", venue: "Sarakasi Dome, Nairobi", image: "https://gigs.madfun.com/images/events/what-we-never-said.jpg" },
-                { id: 6, title: "Mugithi & Rhumba Night", org: "Vibanda Village", date: "25 Jul, 2026", venue: "Vibanda Village", image: "https://madfun.online/assets/img/banners/oak-grove-desktop.jpeg" },
-                { id: 7, title: "Ollin Youth Summit", org: "Ollin Youth Summit", date: "25 Jul, 2026", venue: "Kerugoya Stadium", image: "https://madfun.online/assets/img/banners/ttnt6-desktop.webp" },
-                { id: 8, title: "Rhythm And Rhumba Festival", org: "Signature Events", date: "26 Jul, 2026", venue: "Avery Lounge, Athi River", image: "https://madfun.online/assets/img/banners/maitu-desktop.webp" }
+                { id: 1, title: "Rhema Feast 2026 - Business Forum", org: "Rhema Feast", date: "Fri 4 Sept, 8:00 am", venue: "Uhuru Park, CBD Nairobi", image: "images/events/rhema-feast.jpg" },
+                { id: 2, title: "Maitu Mukabete 4", org: "Maitu Media", date: "Sat 5 Sept, 4:00 pm", venue: "KICC, Tsavo Ballroom", image: "images/events/maitu-mukabete-4.png" },
+                { id: 3, title: "Waiyaki Wa Hinga", org: "Fanaka Arts", date: "Fri 16 Oct, 9:00 pm", venue: "Kenya National Theatre", image: "images/events/waiyaki-wa-hinga.png" },
+                { id: 4, title: "The Call Experience 2.0", org: "The Call", date: "Sun 27 Sept, 7:00 pm", venue: "Citam Karen", image: "images/events/the-call-experience.png" },
+                { id: 5, title: "Becoming CEO Live- September Edition", org: "CEO Live", date: "Sat 12 Sept, 9:00 am", venue: "Nairobi Hospital Convention Centre", image: "images/events/becoming-ceo-live.jpg" },
+                { id: 6, title: "MKU Freshers Summit", org: "Mount Kenya University", date: "Sat 5 Sept, 8:30 am", venue: "Mount Kenya University Main Campus", image: "images/events/nairobi-freshers-summit.png" },
+                { id: 7, title: "Social Night", org: "Kalamata", date: "Sat 5 Sept, 5:30 pm", venue: "Kalamata Restaurant", image: "images/events/social-night.png" },
+                { id: 8, title: "Shamba Safari Experience", org: "Wambugu Apples", date: "Sat 5 Sept, 7:00 pm", venue: "Wambugu Apples Farms, Laikipia County", image: "images/events/shamba-safari.jpg" }
             ];
 
             const grid = document.getElementById('eventsDisplayGrid');
@@ -171,7 +171,7 @@
                 grid.innerHTML = list.map(e => `
                     <div class="inner-event-card">
                         <div class="inner-event-img-wrap">
-                            <img src="${e.image}" alt="${e.title}" onerror="this.src='https://madfun.online/assets/img/banners/oak-grove-desktop.jpeg'" />
+                            <img src="${e.image}" alt="${e.title}" onerror="this.src='images/events/rhema-feast.jpg'" />
                         </div>
                         <div class="inner-event-info">
                             <h3 class="inner-event-title">${e.title}</h3>
@@ -184,12 +184,35 @@
                 `).join('');
             }
 
+            const eventImages = [
+                'images/events/rhema-feast.jpg',
+                'images/events/maitu-mukabete-4.png',
+                'images/events/waiyaki-wa-hinga.png',
+                'images/events/the-call-experience.png',
+                'images/events/becoming-ceo-live.jpg',
+                'images/events/nairobi-freshers-summit.png',
+                'images/events/social-night.png',
+                'images/events/shamba-safari.jpg',
+                'images/events/meet-and-mingle.jpg',
+                'images/events/link-and-laugh.png',
+                'images/events/altar-or-gavel.jpg',
+                'images/events/ethiopian-new-year.jpg',
+                'images/events/back-2-school-quiz.jpg',
+                'images/events/rongai-baddie-fest.jpg',
+                'images/events/spicy-awards.jpg',
+                'images/events/what-we-never-said.jpg',
+                'images/events/chendachenda-fest.png',
+                'images/events/wamama-fun-day.jpg'
+            ];
+
             if (typeof db !== 'undefined') {
                 db.collection('events').onSnapshot(snapshot => {
                     if (!snapshot.empty) {
                         allEvents = [];
+                        let idx = 0;
                         snapshot.forEach(doc => {
                             const d = doc.data();
+                            const img = (d.image && !d.image.includes('gigs.madfun.com') && !d.image.includes('madfun.online')) ? d.image : eventImages[idx % eventImages.length];
                             allEvents.push({
                                 docId: doc.id,
                                 id: d.id || doc.id,
@@ -197,8 +220,9 @@
                                 org: d.org,
                                 date: d.date,
                                 venue: d.venue,
-                                image: d.image
+                                image: img
                             });
+                            idx++;
                         });
                     }
                     renderEvents(allEvents);

@@ -47,27 +47,40 @@
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="destination-body">
-    <!-- NAVBAR (Public or Account depending on state, for simplicity using standard navbar layout here) -->
-    <nav class="navbar" style="position: sticky; top: 0; background: #FFD700; z-index: 1000;">
-        <div class="nav-container">
-            <div class="nav-inner">
-                <div class="nav-content">
-                    <div class="nav-left">
-                        <a class="nav-logo" href="index.html">
-                            <img alt="Madfun Logo" width="56" height="50" src="/madfun.png" />
-                        </a>
-                        <div class="nav-links" style="margin-left: 20px;">
-                            <a href="events.html">Events</a>
-                            <a href="events.html">Xperience</a>
-                            <a href="account-hotels.html">Hotels</a>
-                            <a href="account-travels.html">Travel</a>
-                            <a href="account-streams.html">Streams</a>
-                        </div>
-                    </div>
-                    <div class="nav-right">
-                        <div class="nav-buttons">
-                            <a class="btn-login" href="account.html">My tickets</a>
-                        </div>
+    <!-- ACCOUNT NAVBAR -->
+    <nav class="account-navbar">
+        <div class="account-nav-inner">
+            <div class="account-nav-left">
+                <a href="index.html" class="nav-logo">
+                    <img alt="Madfun Logo" width="56" height="50" src="/madfun.png" />
+                </a>
+                <div class="account-nav-links">
+                    <a href="account-events.html">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" width="18" height="18"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"></path></svg>
+                        Events
+                    </a>
+                    <a href="account-hotels.html">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" width="18" height="18"><path d="M7 14c1.66 0 3-1.34 3-3S8.66 8 7 8s-3 1.34-3 3 1.34 3 3 3zm0-4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm12-3h-8v8H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4zm2 8h-8V9h6c1.1 0 2 .9 2 2v4z"></path></svg>
+                        Hotels
+                    </a>
+                    <a href="account-travels.html" class="active">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" width="18" height="18"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"></path></svg>
+                        Travels
+                    </a>
+                    <a href="account-streams.html">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" width="18" height="18"><path d="M8 5v14l11-7z"></path></svg>
+                        Streams
+                    </a>
+                </div>
+            </div>
+            <div class="account-nav-right">
+                <div class="user-menu" id="userMenu">
+                    <button class="user-menu-btn" id="userMenuBtn">
+                        <span id="userNameSpan">Tyler</span> <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" width="18" height="18"><path d="M7 10l5 5 5-5z"></path></svg>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="account.html">My tickets</a>
+                        <a href="auth.html" class="logout-link">Logout</a>
                     </div>
                 </div>
             </div>
@@ -75,7 +88,7 @@
     </nav>
 
     <!-- HERO SECTION -->
-    <section class="destination-hero" id="destHero" style="background-image: url('https://madfun.online/assets/img/destinations/featured/amboseli.jpg');">
+    <section class="destination-hero" id="destHero" style="background-image: url('images/destinations/amboseli.jpg');">
         <div class="destination-hero-overlay"></div>
         <div class="destination-hero-content">
             <h1 class="destination-title" id="destTitle">AMBOSELI</h1>
@@ -96,9 +109,9 @@
 
                     <h2 class="gallery-title">Gallery</h2>
                     <div class="destination-gallery" id="destGallery">
-                        <img src="https://madfun.online/assets/img/destinations/featured/amboseli.jpg" alt="Gallery 1" />
-                        <img src="https://madfun.online/assets/img/hotels/mara.jpg" alt="Gallery 2" />
-                        <img src="https://madfun.online/assets/img/hotels/kilifi.jpg" alt="Gallery 3" />
+                        <img src="images/destinations/amboseli.jpg" alt="Gallery 1" />
+                        <img src="images/hotels/mara.jpg" alt="Gallery 2" />
+                        <img src="images/hotels/kilifi.jpg" alt="Gallery 3" />
                     </div>
                 </div>
 
@@ -153,25 +166,25 @@
         <div class="destination-container">
             <h2 class="other-title">Other Destinations</h2>
             <div class="travels-grid-cards">
-                <a href="destination.html?id=diani" class="travel-card-item" style="background-image: url('https://madfun.online/assets/img/hotels/kilifi.jpg'), linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.6));">
+                <a href="destination.html?id=diani" class="travel-card-item" style="background-image: url('images/destinations/diani.jpg'), linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.6));">
                     <div class="travel-card-overlay">
                         <h3 class="travel-card-title">Diani</h3>
                         <p class="travel-card-meta">3 Nights · 1 Guest · From USD. 1,250</p>
                     </div>
                 </a>
-                <a href="destination.html?id=joburg" class="travel-card-item" style="background-image: url('https://madfun.online/assets/img/hotels/kilifi-2.jpg'), linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.6));">
+                <a href="destination.html?id=joburg" class="travel-card-item" style="background-image: url('images/destinations/joburg.jpg'), linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.6));">
                     <div class="travel-card-overlay">
                         <h3 class="travel-card-title">Joburg</h3>
                         <p class="travel-card-meta">3 Nights · 1 Guest · From USD. 2,300</p>
                     </div>
                 </a>
-                <a href="destination.html?id=nakuru" class="travel-card-item" style="background-image: url('https://madfun.online/assets/img/hotels/mara.jpg'), linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.6));">
+                <a href="destination.html?id=nakuru" class="travel-card-item" style="background-image: url('images/destinations/lake-nakuru.jpg'), linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.6));">
                     <div class="travel-card-overlay">
                         <h3 class="travel-card-title">Lake Nakuru</h3>
                         <p class="travel-card-meta">3 Nights · 1 Guest · From USD. 1,975</p>
                     </div>
                 </a>
-                <a href="destination.html?id=live" class="travel-card-item" style="background-image: url('https://madfun.online/assets/img/banners/oak-grove-desktop.jpeg'), linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.6));">
+                <a href="destination.html?id=live" class="travel-card-item" style="background-image: url('images/destinations/live-one-day.jpg'), linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.6));">
                     <div class="travel-card-overlay">
                         <h3 class="travel-card-title">Live One Day</h3>
                         <p class="travel-card-meta">1 Day · 1 Guest · From USD. 295</p>
@@ -196,326 +209,326 @@
     "amboseli": {
         "title": "AMBOSELI",
         "subtitle": "3 Nights Amboseli Experience",
-        "image": "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
+        "image": "images/destinations/amboseli.jpg",
         "description": "Experience the beauty and culture of Amboseli. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 1,846",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/amboseli.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "diani": {
         "title": "DIANI",
         "subtitle": "3 Nights Diani Experience",
-        "image": "https://madfun.online/assets/img/destinations/featured/diani.jpg",
+        "image": "images/destinations/diani.jpg",
         "description": "Experience the beauty and culture of Diani. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 1,250",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/diani.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/diani.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "joburg": {
         "title": "JOBURG",
         "subtitle": "3 Nights Joburg Experience",
-        "image": "https://madfun.online/assets/img/destinations/featured/joburg.jpg",
+        "image": "images/destinations/joburg.jpg",
         "description": "Experience the beauty and culture of Joburg. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 2,300",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/joburg.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/joburg.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "lake-nakuru": {
         "title": "LAKE NAKURU",
         "subtitle": "3 Nights Lake Nakuru Experience",
-        "image": "https://madfun.online/assets/img/destinations/featured/lake-nakuru.jpg",
+        "image": "images/destinations/lake-nakuru.jpg",
         "description": "Experience the beauty and culture of Lake Nakuru. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 1,975",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/lake-nakuru.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/lake-nakuru.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "live-one-day": {
         "title": "LIVE ONE DAY THE MAASAI WAY",
         "subtitle": "1 Day Live One Day the Maasai Way Experience",
-        "image": "https://madfun.online/assets/img/destinations/featured/live-one-day.jpg",
+        "image": "images/destinations/live-one-day.jpg",
         "description": "Experience the beauty and culture of Live One Day the Maasai Way. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 295",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/live-one-day.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/live-one-day.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "london": {
         "title": "LONDON",
         "subtitle": "4 Days London Experience",
-        "image": "https://madfun.online/assets/img/destinations/featured/london.jpg",
+        "image": "images/destinations/london.jpg",
         "description": "Experience the beauty and culture of London. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "USD. 1,000",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/london.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/london.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "malaysia": {
         "title": "DISCOVER MALAYSIA",
         "subtitle": "5 Days Discover Malaysia Experience",
-        "image": "https://madfun.online/assets/img/destinations/featured/malaysia.jpg",
+        "image": "images/destinations/malaysia.jpg",
         "description": "Experience the beauty and culture of Discover Malaysia. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 470",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/malaysia.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/malaysia.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "masai-mara": {
         "title": "MAASAI MARA",
         "subtitle": "3 Nights Maasai Mara Experience",
-        "image": "https://madfun.online/assets/img/destinations/featured/masai-mara.jpg",
+        "image": "images/destinations/masai-mara.jpg",
         "description": "Experience the beauty and culture of Maasai Mara. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 2,210",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/masai-mara.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/masai-mara.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "karibu-nairobi": {
         "title": "KARIBU NAIROBI",
         "subtitle": "Karibu Nairobi",
-        "image": "https://madfun.online/assets/img/destinations/featured/nairobi.jpg",
+        "image": "images/destinations/nairobi.jpg",
         "description": "Experience the beauty and culture of Karibu Nairobi. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "USD. 1,000",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/nairobi.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/nairobi.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "naivasha": {
         "title": "FAMILY GETAWAY",
         "subtitle": "3 Days Family Getaway Experience",
-        "image": "https://madfun.online/assets/img/destinations/featured/naivasha.jpg",
+        "image": "images/destinations/naivasha.jpg",
         "description": "Experience the beauty and culture of Family Getaway. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From KES. 55,000",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/naivasha.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/naivasha.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "south-africa": {
         "title": "SOUTH AFRICA",
         "subtitle": "6 Days South Africa Experience",
-        "image": "https://madfun.online/assets/img/destinations/featured/south-africa.jpg",
+        "image": "images/destinations/south-africa.jpg",
         "description": "Experience the beauty and culture of South Africa. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 970",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/south-africa.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/south-africa.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "zanzibar": {
         "title": "DISCOVER ZANZIBAR",
         "subtitle": "5 Discover Zanzibar Experience",
-        "image": "https://madfun.online/assets/img/destinations/featured/zanzibar.webp",
+        "image": "images/destinations/zanzibar.webp",
         "description": "Experience the beauty and culture of Discover Zanzibar. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 560",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/zanzibar.webp",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "greece": {
         "title": "GREECE",
         "subtitle": "Greece",
-        "image": "https://madfun.online/assets/img/destinations/featured/greece.jpg",
+        "image": "images/destinations/greece.jpg",
         "description": "Experience the beauty and culture of Greece. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 1,899",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/greece.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/greece.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "egypt": {
         "title": "CAIRO - EGYPT",
         "subtitle": "2 Cairo - Egypt Experience",
-        "image": "https://madfun.online/assets/img/destinations/featured/egypt.jpg",
+        "image": "images/destinations/egypt.jpg",
         "description": "Experience the beauty and culture of Cairo - Egypt. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 1,565",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/egypt.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/egypt.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "bali": {
         "title": "BALI - INDONESIA",
         "subtitle": "Bali - Indonesia",
-        "image": "https://madfun.online/assets/img/destinations/featured/bali.jpg",
+        "image": "images/destinations/bali.jpg",
         "description": "Experience the beauty and culture of Bali - Indonesia. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 850",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/bali.jpg",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/bali.jpg",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "pattaya": {
         "title": "PATTAYA AND BANGKOK DUO",
         "subtitle": "Pattaya and Bangkok Duo",
-        "image": "https://madfun.online/assets/img/destinations/featured/pattaya-bangkok.avif",
+        "image": "images/destinations/pattaya-bangkok.avif",
         "description": "Experience the beauty and culture of Pattaya and Bangkok Duo. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 1,985",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/pattaya-bangkok.avif",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/pattaya-bangkok.avif",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "paris": {
         "title": "PARIS, ZURICH AND MUNICH",
         "subtitle": "Paris, Zurich and Munich",
-        "image": "https://madfun.online/assets/img/destinations/featured/paris.webp",
+        "image": "images/destinations/paris.webp",
         "description": "Experience the beauty and culture of Paris, Zurich and Munich. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 2,585",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/paris.webp",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/paris.webp",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "melbourne": {
         "title": "MELBOURNE",
         "subtitle": "Melbourne",
-        "image": "https://madfun.online/assets/img/destinations/featured/melbourne.webp",
+        "image": "images/destinations/melbourne.webp",
         "description": "Experience the beauty and culture of Melbourne. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 2,920",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/melbourne.webp",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/melbourne.webp",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "austria": {
         "title": "AUSTRIA",
         "subtitle": "Austria",
-        "image": "https://madfun.online/assets/img/destinations/featured/austria.webp",
+        "image": "images/destinations/austria.webp",
         "description": "Experience the beauty and culture of Austria. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 2,555",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/austria.webp",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/austria.webp",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "japan": {
         "title": "JAPAN",
         "subtitle": "Japan",
-        "image": "https://madfun.online/assets/img/destinations/featured/japan.webp",
+        "image": "images/destinations/japan.webp",
         "description": "Experience the beauty and culture of Japan. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 3,540",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/japan.webp",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/japan.webp",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "italy": {
         "title": "ITALY",
         "subtitle": "Italy",
-        "image": "https://madfun.online/assets/img/destinations/featured/italy.webp",
+        "image": "images/destinations/italy.webp",
         "description": "Experience the beauty and culture of Italy. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 2,550",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/italy.webp",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/italy.webp",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "mauritius": {
         "title": "MAURITIUS",
         "subtitle": "Mauritius",
-        "image": "https://madfun.online/assets/img/destinations/featured/mauritius.webp",
+        "image": "images/destinations/mauritius.webp",
         "description": "Experience the beauty and culture of Mauritius. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 4,850",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/mauritius.webp",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/mauritius.webp",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "turkey": {
         "title": "TURKEY",
         "subtitle": "Turkey",
-        "image": "https://madfun.online/assets/img/destinations/featured/turkey.webp",
+        "image": "images/destinations/turkey.webp",
         "description": "Experience the beauty and culture of Turkey. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 1,050",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/turkey.webp",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/turkey.webp",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "china": {
         "title": "CHINA",
         "subtitle": "China",
-        "image": "https://madfun.online/assets/img/destinations/featured/china.webp",
+        "image": "images/destinations/china.webp",
         "description": "Experience the beauty and culture of China. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 1,795",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/china.webp",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/china.webp",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     },
     "spain": {
         "title": "SPAIN",
         "subtitle": "Spain",
-        "image": "https://madfun.online/assets/img/destinations/featured/spain.webp",
+        "image": "images/destinations/spain.webp",
         "description": "Experience the beauty and culture of Spain. A breathtaking destination awaits you.",
         "oldPrice": "",
         "price": "From USD. 3,375",
         "gallery": [
-            "https://madfun.online/assets/img/destinations/featured/spain.webp",
-            "https://madfun.online/assets/img/destinations/featured/amboseli.jpg",
-            "https://madfun.online/assets/img/destinations/featured/zanzibar.webp"
+            "images/destinations/spain.webp",
+            "images/destinations/amboseli.jpg",
+            "images/destinations/zanzibar.webp"
         ]
     }
 };
@@ -525,15 +538,18 @@
             const destId = params.get('id') || 'amboseli';
 
             function renderDest(data) {
-                document.title = `${data.title} - Madfun`;
-                document.getElementById('destHero').style.backgroundImage = `url('${data.image}')`;
-                document.getElementById('destTitle').innerText = data.title;
-                document.getElementById('destSubtitle').innerText = data.subtitle || '';
-                document.getElementById('destDesc').innerHTML = `<p>${data.description || ''}</p><button class="btn-read-more">Read more</button>`;
-                document.getElementById('destOldPrice').innerText = data.oldPrice || '';
-                document.getElementById('destPrice').innerText = data.price || '';
+                const localData = destinationsData[destId] || destinationsData['amboseli'];
+                const heroImg = (data.image && !data.image.includes('madfun.online') && !data.image.includes('gigs.madfun.com')) ? data.image : localData.image;
+                document.title = `${data.title || localData.title} - Madfun`;
+                document.getElementById('destHero').style.backgroundImage = `url('${heroImg}')`;
+                document.getElementById('destTitle').innerText = data.title || localData.title;
+                document.getElementById('destSubtitle').innerText = data.subtitle || localData.subtitle || '';
+                document.getElementById('destDesc').innerHTML = `<p>${data.description || localData.description || ''}</p><button class="btn-read-more">Read more</button>`;
+                document.getElementById('destOldPrice').innerText = data.oldPrice || localData.oldPrice || '';
+                document.getElementById('destPrice').innerText = data.price || localData.price || '';
                 
-                const galleryArr = data.gallery && data.gallery.length ? data.gallery : [data.image];
+                const rawGallery = (data.gallery && data.gallery.length && !data.gallery[0].includes('madfun.online')) ? data.gallery : localData.gallery;
+                const galleryArr = rawGallery && rawGallery.length ? rawGallery : [heroImg];
                 const galleryHtml = galleryArr.map(img => `<img src="${img}" alt="Gallery image" />`).join('');
                 document.getElementById('destGallery').innerHTML = galleryHtml;
             }
