@@ -707,45 +707,36 @@
             const isOk = res.ok && !data.error && data.status !== 'failed' && data.ResponseCode !== '1';
 
             if (isOk) {
-                // Payment API accepted STK Push request
-                if (statusText) statusText.textContent = 'Please check your phone and enter your M-Pesa PIN to complete payment.';
+                // Payment API dispatched the STK Push prompt to the user's phone.
+                // The status MUST remain 'Pending' until the customer actually enters their PIN!
+                var reqId = data.transaction_request_id || data.TransactionID || data.id || '';
 
                 if (txDocRef) {
                     try {
                         await txDocRef.update({
-                            status: 'Success',
+                            status: 'Pending',
+                            transactionRequestId: reqId || null,
                             gatewayResponse: data || null
                         });
                     } catch (uErr) {
-                        console.warn('Could not update transaction status to Success:', uErr);
+                        console.warn('Could not update transaction status in Firestore:', uErr);
                     }
                 }
 
-                // Also maintain user bookings record
-                if (dbInstance) {
-                    try {
-                        await dbInstance.collection('bookings').add({
-                            eventId: currentEvent ? currentEvent.id : null,
-                            eventTitle: currentEvent ? currentEvent.title : 'Live Event',
-                            customerName: name,
-                            phone: phone,
-                            email: email,
-                            ticketsCount: totalQty,
-                            totalAmount: totalAmount,
-                            amount: totalAmount,
-                            reference: txRef,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                            status: 'COMPLETED'
-                        });
-                    } catch (bErr) {
-                        console.warn('Could not record booking:', bErr);
-                    }
+                if (statusText) {
+                    statusText.innerHTML = '<strong>M-Pesa Prompt Sent!</strong><br>' +
+                        '<span style="font-size: 0.85rem; color: #4b5563; display:block; margin-top: 6px;">' +
+                        'Please check your phone (<strong>' + phone + '</strong>) and enter your M-Pesa PIN.<br>' +
+                        'Waiting for payment confirmation...</span>';
                 }
 
-                setTimeout(function () {
-                    showSuccessScreen(name, phone, totalQty, totalAmount, txRef);
-                }, 3500);
+                // If we received a transaction_request_id, poll for actual payment confirmation
+                if (reqId) {
+                    pollPaymentStatus(reqId, txDocRef, txRef, name, phone, email, totalQty, totalAmount, dbInstance);
+                } else {
+                    // In static demo or if gateway didn't return request id, keep as Pending
+                    console.log('STK prompt dispatched without tracking ID. Transaction remains Pending.');
+                }
 
             } else {
                 // API returned error or failure
@@ -764,19 +755,15 @@
                     }
                 }
 
-                // If in demo/unconfigured environment, simulate completion after recording the error
-                if (res.status === 500 && errMsg.includes('Payment service not configured')) {
-                    if (statusText) statusText.textContent = 'Demo Mode: API keys not configured. Simulating order completion...';
-                    setTimeout(function () {
-                        showSuccessScreen(name, phone, totalQty, totalAmount, txRef);
-                    }, 2500);
-                } else {
-                    if (statusText) statusText.textContent = 'M-Pesa error: ' + errMsg;
-                    setTimeout(function () {
-                        if (statusOverlay) statusOverlay.style.display = 'none';
-                        alert('Payment failed: ' + errMsg);
-                    }, 3000);
+                if (statusText) {
+                    statusText.innerHTML = '<span style="color:#ef4444; font-weight:600;">Payment Request Failed</span><br>' +
+                        '<span style="font-size:0.85rem; color:#6b7280; display:block; margin-top:4px;">' + errMsg + '</span>';
                 }
+
+                setTimeout(function () {
+                    if (statusOverlay) statusOverlay.style.display = 'none';
+                    alert('Payment could not be initiated: ' + errMsg);
+                }, 3000);
             }
 
         } catch (err) {
@@ -795,12 +782,113 @@
                 }
             }
 
-            // Fallback simulated flow for local/static environments without /api/pay serverless handler
-            if (statusText) statusText.textContent = 'Local preview: Order logged to database. Simulating ticket generation...';
+            if (statusText) {
+                statusText.innerHTML = '<span style="color:#ef4444; font-weight:600;">Connection Error</span><br>' +
+                    '<span style="font-size:0.85rem; color:#6b7280; display:block; margin-top:4px;">' + networkErrMsg + '</span>';
+            }
+
             setTimeout(function () {
-                showSuccessScreen(name, phone, totalQty, totalAmount, txRef);
-            }, 2000);
+                if (statusOverlay) statusOverlay.style.display = 'none';
+            }, 3000);
         }
+    }
+
+    // ===== POLL FOR PAYMENT CONFIRMATION =====
+    async function pollPaymentStatus(reqId, txDocRef, txRef, name, phone, email, totalQty, totalAmount, dbInstance) {
+        var statusText = document.getElementById('paymentStatusText');
+        var maxAttempts = 20; // 20 * 3.5s = ~70 seconds
+        var attempts = 0;
+
+        var interval = setInterval(async function () {
+            attempts++;
+
+            try {
+                const res = await fetch('/api/check-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ transaction_request_id: reqId })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const status = (data.TransactionStatus || data.status || '').toLowerCase();
+                    const isCompleted = status === 'completed' || status === 'paid' || (data.TransactionCode === '0' && data.TransactionReceipt);
+                    const isFailed = status === 'failed' || (data.ResultCode && data.ResultCode !== '200' && data.ResultCode !== '0');
+
+                    if (isCompleted) {
+                        clearInterval(interval);
+
+                        // 1. Mark transaction as SUCCESS in Firestore
+                        if (txDocRef) {
+                            await txDocRef.update({
+                                status: 'Success',
+                                mpesaReceipt: data.TransactionReceipt || '',
+                                errorMessage: '',
+                                confirmedAt: firebase.firestore.FieldValue.serverTimestamp()
+                            }).catch(function () {});
+                        }
+
+                        // 2. Record confirmed booking
+                        if (dbInstance) {
+                            await dbInstance.collection('bookings').add({
+                                eventId: currentEvent ? currentEvent.id : null,
+                                eventTitle: currentEvent ? currentEvent.title : 'Live Event',
+                                customerName: name,
+                                phone: phone,
+                                email: email,
+                                ticketsCount: totalQty,
+                                totalAmount: totalAmount,
+                                amount: totalAmount,
+                                reference: txRef,
+                                mpesaReceipt: data.TransactionReceipt || '',
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                                status: 'COMPLETED'
+                            }).catch(function () {});
+                        }
+
+                        showSuccessScreen(name, phone, totalQty, totalAmount, txRef);
+                        return;
+                    }
+
+                    if (isFailed) {
+                        clearInterval(interval);
+                        var failMsg = data.ResultDesc || data.errorMessage || 'Payment cancelled by user';
+
+                        if (txDocRef) {
+                            await txDocRef.update({
+                                status: 'Failed',
+                                errorMessage: failMsg
+                            }).catch(function () {});
+                        }
+
+                        if (statusText) {
+                            statusText.innerHTML = '<span style="color:#ef4444; font-weight:600;">Payment Not Completed</span><br>' +
+                                '<span style="font-size:0.85rem; color:#6b7280; display:block; margin-top:4px;">' + failMsg + '</span>';
+                        }
+                        return;
+                    }
+                }
+            } catch (pollErr) {
+                console.warn('Status check poll note:', pollErr);
+            }
+
+            if (attempts >= maxAttempts) {
+                clearInterval(interval);
+
+                if (txDocRef) {
+                    await txDocRef.update({
+                        status: 'Failed',
+                        errorMessage: 'Payment timed out: No PIN was entered within 70 seconds'
+                    }).catch(function () {});
+                }
+
+                if (statusText) {
+                    statusText.innerHTML = '<span style="color:#ef4444; font-weight:600;">Payment Timed Out</span><br>' +
+                        '<span style="font-size:0.85rem; color:#6b7280; display:block; margin-top:4px;">No PIN was entered on your phone. If you already completed payment, please check your account.</span>';
+                }
+            }
+        }, 3500);
     }
 
     function showSuccessScreen(name, phone, count, amount, reference) {
