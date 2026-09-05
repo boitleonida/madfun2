@@ -614,7 +614,70 @@
         }
     }
 
-    // ===== PAYMENT INITIATION =====
+    // ===== PAYMENT ERROR CLASSIFIER =====
+    // Maps all possible Safaricom Daraja, MegaPay gateway, validation, and network errors into clear descriptions
+    function mapPaymentErrorMessage(rawErr, code) {
+        if (!rawErr && !code) return 'Payment was not completed';
+
+        var str = String(rawErr || '').toLowerCase();
+        var c = String(code || '');
+
+        // 1. Safaricom Handset & Subscriber ResultCodes
+        if (c === '1032' || str.includes('1032') || str.includes('cancelled') || str.includes('canceled')) {
+            return 'Customer cancelled M-Pesa prompt on phone (Code: 1032)';
+        }
+        if (c === '1' || str.includes('insufficient') || str.includes('balance')) {
+            return 'Insufficient M-Pesa balance on customer wallet (Code: 1)';
+        }
+        if (c === '2001' || str.includes('invalid pin') || str.includes('wrong pin') || str.includes('initiator information is invalid')) {
+            return 'Incorrect M-Pesa PIN entered by customer (Code: 2001)';
+        }
+        if (c === '1037' || str.includes('timeout user cannot be reached') || str.includes('user cannot be reached') || str.includes('unreachable')) {
+            return 'Phone unreachable or SIM toolkit response timed out (Code: 1037)';
+        }
+        if (c === '1019' || str.includes('transaction has expired') || str.includes('expired')) {
+            return 'M-Pesa STK prompt expired on device (Code: 1019)';
+        }
+        if (c === '1001' || str.includes('already in progress') || str.includes('another transaction')) {
+            return 'Another M-Pesa transaction is currently in progress on this phone (Code: 1001)';
+        }
+        if (c === '1025' || str.includes('push request failed')) {
+            return 'Safaricom push request delivery failed (Code: 1025)';
+        }
+        if (c === '9999' || str.includes('internal system error')) {
+            return 'Safaricom system error during processing (Code: 9999)';
+        }
+
+        // 2. Gateway Configuration & Merchant Setup Errors
+        if (str.includes('payment service not configured') || str.includes('api_key') || str.includes('missing in environment')) {
+            return 'Gateway Configuration Error: Missing MegaPay credentials (MEGAPAY_API_KEY / EMAIL)';
+        }
+        if (str.includes('unauthorized') || str.includes('invalid api key') || str.includes('authentication failed')) {
+            return 'Merchant Authentication Error: Invalid MegaPay API Key or email';
+        }
+        if (str.includes('no active payment account') || str.includes('unlinked') || str.includes('till') || str.includes('paybill')) {
+            return 'Merchant Setup Error: Till or Paybill account unlinked in MegaPay';
+        }
+
+        // 3. Input & Validation Errors
+        if (str.includes('invalid safaricom phone') || str.includes('phone number') || str.includes('msisdn')) {
+            return 'Invalid Safaricom phone number (Format: 07XXXXXXXX or 01XXXXXXXX)';
+        }
+        if (str.includes('amount') || str.includes('minimum')) {
+            return 'Invalid transaction amount (Must be at least KES 1)';
+        }
+
+        // 4. Session & Network Errors
+        if (str.includes('70 seconds') || str.includes('timed out')) {
+            return 'Payment session timed out: No PIN was entered within 70 seconds';
+        }
+        if (str.includes('network') || str.includes('fetch') || str.includes('failed to fetch') || str.includes('offline')) {
+            return 'Network connection error: Failed to reach payment gateway';
+        }
+
+        return rawErr;
+    }
+
     // ===== PAYMENT INITIATION =====
     async function initiatePayment() {
         var phoneInput = document.getElementById('checkoutPhone');
@@ -655,7 +718,7 @@
         var dbInstance = (typeof db !== 'undefined') ? db : ((typeof firebase !== 'undefined' && firebase.firestore) ? firebase.firestore() : null);
         var txDocRef = null;
 
-        // 1. STORE IN DB IMMEDIATELY WHEN STK PUSH IS INITIATED (Regardless of success/failure)
+        // 1. STORE IN DB IMMEDIATELY WHEN STK PUSH IS INITIATED (Status starts as Pending)
         if (dbInstance) {
             try {
                 var initialTx = {
@@ -734,20 +797,20 @@
                 if (reqId) {
                     pollPaymentStatus(reqId, txDocRef, txRef, name, phone, email, totalQty, totalAmount, dbInstance);
                 } else {
-                    // In static demo or if gateway didn't return request id, keep as Pending
                     console.log('STK prompt dispatched without tracking ID. Transaction remains Pending.');
                 }
 
             } else {
-                // API returned error or failure
-                var errMsg = data.error || data.message || data.errorMessage || ('Payment error (' + res.status + ')');
-                console.error('MegaPay API error:', errMsg, data);
+                // API returned error or failure: translate to clear human-readable message
+                var rawErrMsg = data.error || data.message || data.errorMessage || ('Payment error (' + res.status + ')');
+                var classifiedError = mapPaymentErrorMessage(rawErrMsg, data.ResultCode || data.code || res.status);
+                console.error('MegaPay API error:', classifiedError, data);
 
                 if (txDocRef) {
                     try {
                         await txDocRef.update({
                             status: 'Failed',
-                            errorMessage: errMsg,
+                            errorMessage: classifiedError,
                             gatewayResponse: data || null
                         });
                     } catch (uErr) {
@@ -757,20 +820,20 @@
 
                 if (statusText) {
                     statusText.innerHTML = '<span style="color:#ef4444; font-weight:600;">Payment Request Failed</span><br>' +
-                        '<span style="font-size:0.85rem; color:#6b7280; display:block; margin-top:4px;">' + errMsg + '</span>';
+                        '<span style="font-size:0.85rem; color:#6b7280; display:block; margin-top:4px;">' + classifiedError + '</span>';
                 }
 
                 setTimeout(function () {
                     if (statusOverlay) statusOverlay.style.display = 'none';
-                    alert('Payment could not be initiated: ' + errMsg);
+                    alert('Payment could not be initiated: ' + classifiedError);
                 }, 3000);
             }
 
         } catch (err) {
             console.error('Network or client exception during STK push:', err);
-            var networkErrMsg = err.message || 'Network request failed';
+            var networkErrMsg = mapPaymentErrorMessage(err.message || 'Network request failed');
 
-            // Mark transaction as failed in Firestore immediately
+            // Mark transaction as failed in Firestore immediately with clear error
             if (txDocRef) {
                 try {
                     await txDocRef.update({
@@ -824,6 +887,7 @@
                                 status: 'Success',
                                 mpesaReceipt: data.TransactionReceipt || '',
                                 errorMessage: '',
+                                gatewayResponse: data || null,
                                 confirmedAt: firebase.firestore.FieldValue.serverTimestamp()
                             }).catch(function () {});
                         }
@@ -853,12 +917,14 @@
 
                     if (isFailed) {
                         clearInterval(interval);
-                        var failMsg = data.ResultDesc || data.errorMessage || 'Payment cancelled by user';
+                        var rawFail = data.ResultDesc || data.errorMessage || data.TransactionStatus || 'Payment cancelled by user';
+                        var failMsg = mapPaymentErrorMessage(rawFail, data.ResultCode || data.TransactionCode);
 
                         if (txDocRef) {
                             await txDocRef.update({
                                 status: 'Failed',
-                                errorMessage: failMsg
+                                errorMessage: failMsg,
+                                gatewayResponse: data || null
                             }).catch(function () {});
                         }
 
@@ -875,11 +941,12 @@
 
             if (attempts >= maxAttempts) {
                 clearInterval(interval);
+                var timeoutMsg = mapPaymentErrorMessage('Payment session timed out: No PIN was entered within 70 seconds');
 
                 if (txDocRef) {
                     await txDocRef.update({
                         status: 'Failed',
-                        errorMessage: 'Payment timed out: No PIN was entered within 70 seconds'
+                        errorMessage: timeoutMsg
                     }).catch(function () {});
                 }
 
