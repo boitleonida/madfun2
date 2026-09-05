@@ -658,18 +658,49 @@
                 let html = '';
                 snapshot.forEach((doc) => {
                     const data = doc.data();
+                    const ts = data.timestamp || data.createdAt;
+                    const amt = (typeof data.amount !== 'undefined') ? data.amount : (data.totalAmount || 0);
                     html += `
                         <tr>
-                            <td>${formatDate(data.timestamp)}</td>
+                            <td>${formatDate(ts)}</td>
                             <td>${data.phone || '-'}</td>
                             <td>${data.email || '-'}</td>
-                            <td>KES ${data.amount ? data.amount.toLocaleString() : '0'}</td>
+                            <td>KES ${amt ? amt.toLocaleString() : '0'}</td>
                             <td>${data.reference || '-'}</td>
                             <td>${getStatusBadge(data.status)}</td>
                             <td>${data.errorMessage || '-'}</td>
                         </tr>`;
                 });
                 tbody.innerHTML = html;
+            }, (err) => {
+                console.error("Error loading transactions:", err);
+                db.collection("transactions").get().then((snapshot) => {
+                    const tbody = document.getElementById('transactionsBody');
+                    if (snapshot.empty) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No transactions found.</td></tr>';
+                        return;
+                    }
+                    let docs = [];
+                    snapshot.forEach(d => docs.push(d.data()));
+                    let html = '';
+                    docs.forEach(data => {
+                        const ts = data.timestamp || data.createdAt;
+                        const amt = (typeof data.amount !== 'undefined') ? data.amount : (data.totalAmount || 0);
+                        html += `
+                            <tr>
+                                <td>${formatDate(ts)}</td>
+                                <td>${data.phone || '-'}</td>
+                                <td>${data.email || '-'}</td>
+                                <td>KES ${amt ? amt.toLocaleString() : '0'}</td>
+                                <td>${data.reference || '-'}</td>
+                                <td>${getStatusBadge(data.status)}</td>
+                                <td>${data.errorMessage || '-'}</td>
+                            </tr>`;
+                    });
+                    tbody.innerHTML = html;
+                }).catch(getErr => {
+                    document.getElementById('transactionsBody').innerHTML = `<tr><td colspan="7" class="empty-state" style="color: #dc2626;">Error: ${err.message}</td></tr>`;
+                });
             }));
 
             // 2. Load Queries

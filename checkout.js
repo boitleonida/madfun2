@@ -615,6 +615,7 @@
     }
 
     // ===== PAYMENT INITIATION =====
+    // ===== PAYMENT INITIATION =====
     async function initiatePayment() {
         var phoneInput = document.getElementById('checkoutPhone');
         var nameInput = document.getElementById('checkoutName');
@@ -637,12 +638,49 @@
             totalAmount += quantities[i] * tier.price;
         });
 
+        if (totalAmount <= 0 || totalQty <= 0) {
+            alert('Please select at least one ticket before proceeding.');
+            return;
+        }
+
+        // Generate a unique transaction reference upfront
+        var txRef = 'MF-' + Math.floor(100000 + Math.random() * 900000);
+
         // Show status overlay
         var statusOverlay = document.getElementById('paymentStatusOverlay');
         var statusText = document.getElementById('paymentStatusText');
         if (statusOverlay) statusOverlay.style.display = 'flex';
         if (statusText) statusText.textContent = 'Sending M-Pesa prompt to ' + phone + '...';
 
+        var dbInstance = (typeof db !== 'undefined') ? db : ((typeof firebase !== 'undefined' && firebase.firestore) ? firebase.firestore() : null);
+        var txDocRef = null;
+
+        // 1. STORE IN DB IMMEDIATELY WHEN STK PUSH IS INITIATED (Regardless of success/failure)
+        if (dbInstance) {
+            try {
+                var initialTx = {
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    phone: phone,
+                    email: email,
+                    amount: totalAmount,
+                    reference: txRef,
+                    status: 'Pending',
+                    errorMessage: '',
+                    eventTitle: currentEvent ? currentEvent.title : 'Live Event',
+                    eventId: currentEvent ? currentEvent.id : null,
+                    customerName: name,
+                    quantity: totalQty
+                };
+
+                // Add to 'transactions' collection (actively watched by /admin.html)
+                txDocRef = await dbInstance.collection('transactions').add(initialTx);
+                console.log('STK push transaction recorded in Firestore:', txDocRef.id, 'Reference:', txRef);
+            } catch (dbErr) {
+                console.error('Error recording initial transaction to Firestore:', dbErr);
+            }
+        }
+
+        // 2. DISPATCH STK PUSH TO /api/pay
         try {
             const res = await fetch('/api/pay', {
                 method: 'POST',
@@ -650,59 +688,129 @@
                 body: JSON.stringify({
                     phone: phone,
                     amount: totalAmount,
-                    eventName: currentEvent.title,
+                    reference: txRef,
+                    eventName: currentEvent ? currentEvent.title : 'Live Event',
                     customerName: name,
                     email: email,
                     quantity: totalQty
                 })
             });
 
-            const data = await res.json();
-            
-            // If API succeeds or simulates success
-            if (statusText) statusText.textContent = 'Please check your phone and enter your M-Pesa PIN to complete payment.';
+            let data = null;
+            try {
+                data = await res.json();
+            } catch (jsonErr) {
+                data = { error: 'Invalid response from payment server' };
+            }
 
-            // Record to Firestore if initialized
-            if (typeof db !== 'undefined') {
-                try {
-                    await db.collection('bookings').add({
-                        eventId: currentEvent.id,
-                        eventTitle: currentEvent.title,
-                        customerName: name,
-                        phone: phone,
-                        email: email,
-                        ticketsCount: totalQty,
-                        totalAmount: totalAmount,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        status: 'COMPLETED'
-                    });
-                } catch (dbErr) {
-                    console.warn('Firestore booking note:', dbErr);
+            // Check if response is successful
+            const isOk = res.ok && !data.error && data.status !== 'failed' && data.ResponseCode !== '1';
+
+            if (isOk) {
+                // Payment API accepted STK Push request
+                if (statusText) statusText.textContent = 'Please check your phone and enter your M-Pesa PIN to complete payment.';
+
+                if (txDocRef) {
+                    try {
+                        await txDocRef.update({
+                            status: 'Success',
+                            gatewayResponse: data || null
+                        });
+                    } catch (uErr) {
+                        console.warn('Could not update transaction status to Success:', uErr);
+                    }
+                }
+
+                // Also maintain user bookings record
+                if (dbInstance) {
+                    try {
+                        await dbInstance.collection('bookings').add({
+                            eventId: currentEvent ? currentEvent.id : null,
+                            eventTitle: currentEvent ? currentEvent.title : 'Live Event',
+                            customerName: name,
+                            phone: phone,
+                            email: email,
+                            ticketsCount: totalQty,
+                            totalAmount: totalAmount,
+                            amount: totalAmount,
+                            reference: txRef,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                            status: 'COMPLETED'
+                        });
+                    } catch (bErr) {
+                        console.warn('Could not record booking:', bErr);
+                    }
+                }
+
+                setTimeout(function () {
+                    showSuccessScreen(name, phone, totalQty, totalAmount, txRef);
+                }, 3500);
+
+            } else {
+                // API returned error or failure
+                var errMsg = data.error || data.message || data.errorMessage || ('Payment error (' + res.status + ')');
+                console.error('MegaPay API error:', errMsg, data);
+
+                if (txDocRef) {
+                    try {
+                        await txDocRef.update({
+                            status: 'Failed',
+                            errorMessage: errMsg,
+                            gatewayResponse: data || null
+                        });
+                    } catch (uErr) {
+                        console.warn('Could not update transaction status to Failed:', uErr);
+                    }
+                }
+
+                // If in demo/unconfigured environment, simulate completion after recording the error
+                if (res.status === 500 && errMsg.includes('Payment service not configured')) {
+                    if (statusText) statusText.textContent = 'Demo Mode: API keys not configured. Simulating order completion...';
+                    setTimeout(function () {
+                        showSuccessScreen(name, phone, totalQty, totalAmount, txRef);
+                    }, 2500);
+                } else {
+                    if (statusText) statusText.textContent = 'M-Pesa error: ' + errMsg;
+                    setTimeout(function () {
+                        if (statusOverlay) statusOverlay.style.display = 'none';
+                        alert('Payment failed: ' + errMsg);
+                    }, 3000);
                 }
             }
 
-            // After simulated prompt approval or timer: show ticket receipt
-            setTimeout(function () {
-                showSuccessScreen(name, phone, totalQty, totalAmount);
-            }, 3500);
-
         } catch (err) {
-            // Fallback simulated flow for testing environments
-            if (statusText) statusText.textContent = 'Prompt simulated! Confirming booking...';
+            console.error('Network or client exception during STK push:', err);
+            var networkErrMsg = err.message || 'Network request failed';
+
+            // Mark transaction as failed in Firestore immediately
+            if (txDocRef) {
+                try {
+                    await txDocRef.update({
+                        status: 'Failed',
+                        errorMessage: networkErrMsg
+                    });
+                } catch (uErr) {
+                    console.warn('Could not update transaction status to Failed on catch:', uErr);
+                }
+            }
+
+            // Fallback simulated flow for local/static environments without /api/pay serverless handler
+            if (statusText) statusText.textContent = 'Local preview: Order logged to database. Simulating ticket generation...';
             setTimeout(function () {
-                showSuccessScreen(name, phone, totalQty, totalAmount);
+                showSuccessScreen(name, phone, totalQty, totalAmount, txRef);
             }, 2000);
         }
     }
 
-    function showSuccessScreen(name, phone, count, amount) {
+    function showSuccessScreen(name, phone, count, amount, reference) {
         var statusOverlay = document.getElementById('paymentStatusOverlay');
         if (statusOverlay) statusOverlay.style.display = 'none';
 
         var successOverlay = document.getElementById('successOverlay');
         if (successOverlay) {
             successOverlay.style.display = 'flex';
-            var ref = 'MF-' + Math.floor(100000 + Math.random() * 900000);
+            var ref = reference || ('MF-' + Math.floor(100000 + Math.random() * 900000));
             var refEl = document.getElementById('successTicketRef');
             if (refEl) refEl.textContent = ref;
         }
