@@ -88,9 +88,10 @@
     </nav>
 
     <!-- HERO SECTION -->
-    <section class="destination-hero" id="destHero" style="background-image: url('images/destinations/amboseli.jpg');">
-        <div class="destination-hero-overlay"></div>
-        <div class="destination-hero-content">
+    <section class="destination-hero" id="destHero" style="position: relative; overflow: hidden;">
+        <img id="destHeroImg" src="images/destinations/amboseli.jpg" alt="Destination Banner" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;" />
+        <div class="destination-hero-overlay" style="z-index: 1;"></div>
+        <div class="destination-hero-content" style="z-index: 2;">
             <h1 class="destination-title" id="destTitle">AMBOSELI</h1>
             <p class="destination-subtitle" id="destSubtitle">4 days, 3 night Amboseli National Park Spectacular Safari</p>
         </div>
@@ -541,6 +542,8 @@
                 const localData = destinationsData[destId] || destinationsData['amboseli'];
                 const heroImg = (data.image && !data.image.includes('madfun.online') && !data.image.includes('gigs.madfun.com')) ? data.image : localData.image;
                 document.title = `${data.title || localData.title} - Madfun`;
+                const heroImgEl = document.getElementById('destHeroImg');
+                if (heroImgEl) heroImgEl.src = heroImg;
                 document.getElementById('destHero').style.backgroundImage = `url('${heroImg}')`;
                 document.getElementById('destTitle').innerText = data.title || localData.title;
                 document.getElementById('destSubtitle').innerText = data.subtitle || localData.subtitle || '';

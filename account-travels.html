@@ -474,6 +474,24 @@
                         userDropdown.classList.remove('open');
                     }
                 });
+            }
+
+            const destinationImgMap = {
+                'amboseli': 'images/destinations/amboseli.jpg',
+                'diani': 'images/destinations/diani.jpg',
+                'joburg': 'images/destinations/joburg.jpg',
+                'lake-nakuru': 'images/destinations/lake-nakuru.jpg',
+                'live-one-day': 'images/destinations/live-one-day.jpg',
+                'london': 'images/destinations/london.jpg',
+                'malaysia': 'images/destinations/malaysia.jpg',
+                'masai-mara': 'images/destinations/masai-mara.jpg',
+                'karibu-nairobi': 'images/destinations/nairobi.jpg',
+                'naivasha': 'images/destinations/naivasha.jpg',
+                'south-africa': 'images/destinations/south-africa.jpg',
+                'zanzibar': 'images/destinations/zanzibar.jpg',
+                'greece': 'images/destinations/greece.jpg'
+            };
+
             // Load destinations dynamically from Firestore if available
             if (typeof db !== 'undefined') {
                 const gridEl = document.querySelector('.destinations-grid');
@@ -484,8 +502,9 @@
                             snapshot.forEach(doc => {
                                 const d = doc.data();
                                 const slug = d.slug || doc.id;
+                                const img = (d.image && !d.image.includes('madfun.online') && !d.image.includes('gigs.madfun.com')) ? d.image : (destinationImgMap[slug] || 'images/destinations/amboseli.jpg');
                                 html += `
-                                    <a class="destination-card" href="destination.html?id=${slug}" style="background-image:url(${d.image})">
+                                    <a class="destination-card" href="destination.html?id=${slug}" style="background-image:url('${img}')">
                                         <div class="destination-overlay">
                                             <div class="destination-info">
                                                 <div class="destination-name" style="font-size: 1.4rem; font-weight: 700;">${d.title}</div>
